@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2020, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,47 +24,33 @@
  */
 package net.runelite.client.util;
 
-import com.apple.eawt.Application;
-import com.apple.eawt.FullScreenUtilities;
-import javax.swing.JFrame;
-import lombok.extern.slf4j.Slf4j;
+import com.sun.jna.Native;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.platform.win32.WinUser;
+import java.awt.Component;
 
-/**
- * A class with OSX-specific functions to improve integration.
- */
-@Slf4j
-public class OSXUtil
+public class WinUtil
 {
 	/**
-	 * Enables the osx native fullscreen if running on a mac.
+	 * Forcibly set focus to the given component
 	 *
-	 * @param gui The gui to enable the fullscreen on.
+	 * @param component
 	 */
-	public static void tryEnableFullscreen(JFrame gui)
+	public static void requestForeground(Component component)
 	{
-		if (OSType.getOSType() == OSType.MacOS)
-		{
-			FullScreenUtilities.setWindowCanFullScreen(gui, true);
-			log.debug("Enabled fullscreen on macOS");
-		}
-	}
+		User32 user32 = User32.INSTANCE;
 
-	public static void requestUserAttention()
-	{
-		Application app = Application.getApplication();
-		app.requestUserAttention(true);
-	}
+		// Windows does not allow any process to set the foreground window, but it will if
+		// the process received the last input event. So we send a F22 key event to the process.
+		// https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setforegroundwindow
+		WinUser.INPUT input = new WinUser.INPUT();
+		input.type = new WinDef.DWORD(WinUser.INPUT.INPUT_KEYBOARD);
+		input.input.ki.wVk = new WinDef.WORD(0x85); // VK_F22
+		user32.SendInput(new WinDef.DWORD(1), (WinUser.INPUT[]) input.toArray(1), input.size());
 
-	/**
-	 * Requests the foreground in a macOS friendly way.
-	 */
-	public static void requestForeground()
-	{
-		if (OSType.getOSType() == OSType.MacOS)
-		{
-			Application app = Application.getApplication();
-			app.requestForeground(true);
-			log.debug("Requested focus on macOS");
-		}
+		// Now we may set the foreground window
+		WinDef.HWND hwnd = new WinDef.HWND(Native.getComponentPointer(component));
+		user32.SetForegroundWindow(hwnd);
 	}
 }
