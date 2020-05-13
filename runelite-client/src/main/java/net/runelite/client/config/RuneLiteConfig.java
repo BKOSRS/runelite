@@ -147,8 +147,8 @@ public interface RuneLiteConfig extends Config
 
 	@ConfigItem(
 		keyName = "notificationRequestFocus",
-		name = "Request focus on notification",
-		description = "Configures the window focus request type on notification",
+		name = "Background notifications",
+		description = "Behavior of unfocused client when a notification is received. <br>Bring attention to client (Request), or bring client to the front (Force).",
 		position = 21
 	)
 	default RequestFocusType notificationRequestFocus()
