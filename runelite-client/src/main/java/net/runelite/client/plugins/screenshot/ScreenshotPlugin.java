@@ -119,6 +119,8 @@ public class ScreenshotPlugin extends Plugin
 
 	private boolean shouldTakeScreenshot;
 
+	private boolean screenshotPath;
+
 	@Inject
 	private ScreenshotConfig config;
 
@@ -637,7 +639,7 @@ public class ScreenshotPlugin extends Plugin
 
 		// Draw the game onto the screenshot
 		graphics.drawImage(image, gameOffsetX, gameOffsetY, null);
-		imageCapture.takeScreenshot(screenshot, fileName, subDir, config.notifyWhenTaken(), config.uploadScreenshot());
+		imageCapture.takeScreenshot(screenshot, fileName, subDir, config.notifyWhenTaken(), config.uploadScreenshot(), config.screenshotPath());
 	}
 
 	private boolean isInsideGauntlet()

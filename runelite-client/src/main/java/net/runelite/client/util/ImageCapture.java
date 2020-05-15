@@ -75,18 +75,16 @@ public class ImageCapture
 
 	@Inject
 	private Notifier notifier;
-
 	/**
 	 * Saves a screenshot of the client window to the screenshot folder as a PNG,
 	 * and optionally uploads it to an image-hosting service.
-	 *
 	 * @param screenshot BufferedImage to capture.
 	 * @param fileName Filename to use, without file extension.
 	 * @param subDir Directory within the player screenshots dir to store the captured screenshot to.
 	 * @param notify Send a notification to the system tray when the image is captured.
 	 * @param imageUploadStyle which method to use to upload the screenshot (Imgur or directly to clipboard).
 	 */
-	public void takeScreenshot(BufferedImage screenshot, String fileName, @Nullable String subDir, boolean notify, ImageUploadStyle imageUploadStyle)
+	public void takeScreenshot(BufferedImage screenshot, String fileName, @Nullable String subDir, boolean notify, ImageUploadStyle imageUploadStyle, boolean screenshotPath)
 	{
 		if (client.getGameState() == GameState.LOGIN_SCREEN)
 		{
@@ -155,9 +153,19 @@ public class ImageCapture
 					notifier.notify("A screenshot was saved and inserted into your clipboard!", TrayIcon.MessageType.INFO);
 				}
 			}
+			else if (screenshotPath)
+			{
+				if (notify)
+				{
+					notifier.notify("Screenshot saved!", TrayIcon.MessageType.INFO);
+				}
+			}
+
 			else if (notify)
 			{
-				notifier.notify("A screenshot was saved to " + screenshotFile, TrayIcon.MessageType.INFO);
+				{
+					notifier.notify("A screenshot was saved to " + screenshotFile, TrayIcon.MessageType.INFO);
+				}
 			}
 		}
 		catch (IOException ex)
@@ -177,7 +185,8 @@ public class ImageCapture
 	 */
 	public void takeScreenshot(BufferedImage screenshot, String fileName, boolean notify, ImageUploadStyle imageUploadStyle)
 	{
-		takeScreenshot(screenshot, fileName, null, notify, imageUploadStyle);
+		boolean screenshotPath = false;
+		takeScreenshot(screenshot, fileName, null, notify, imageUploadStyle, screenshotPath);
 	}
 
 	/**
