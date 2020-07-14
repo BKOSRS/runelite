@@ -210,6 +210,7 @@ enum Task
 		"Molch",
 		"Mount Quidamortem",
 		"Mourner Tunnels",
+		"Myths' Guild Dungeon",
 		"Ogre Enclave",
 		"Slayer Tower",
 		"Smoke Devil Dungeon",
