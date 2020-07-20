@@ -38,6 +38,7 @@ import net.runelite.client.Notifier;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
+import net.runelite.client.ui.overlay.OverlayRenderer;
 import net.runelite.client.ui.overlay.infobox.Counter;
 import net.runelite.client.ui.overlay.infobox.InfoBoxManager;
 import net.runelite.client.util.ImageUtil;
@@ -53,6 +54,9 @@ class DevToolsPanel extends PluginPanel
 	private final ScriptInspector scriptInspector;
 	private final InfoBoxManager infoBoxManager;
 	private final ScheduledExecutorService scheduledExecutorService;
+
+	@Inject
+	private OverlayRenderer overlayRenderer;
 
 	@Inject
 	private DevToolsPanel(
@@ -179,6 +183,10 @@ class DevToolsPanel extends PluginPanel
 		final JButton clearInfoboxBtn = new JButton("Clear Infobox");
 		clearInfoboxBtn.addActionListener(e -> infoBoxManager.removeIf(i -> true));
 		container.add(clearInfoboxBtn);
+
+		container.add(plugin.getHideOverlay());
+		plugin.getHideOverlay().addActionListener((ev) ->
+			overlayRenderer.setPauseRendering(!plugin.getHideOverlay().isActive()));
 
 		return container;
 	}

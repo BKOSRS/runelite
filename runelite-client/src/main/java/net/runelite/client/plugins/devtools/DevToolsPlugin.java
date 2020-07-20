@@ -55,12 +55,14 @@ import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.JagexColors;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.ui.overlay.OverlayRenderer;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.ImageUtil;
 import org.slf4j.LoggerFactory;
@@ -142,11 +144,23 @@ public class DevToolsPlugin extends Plugin
 	private DevToolsButton scriptInspector;
 	private NavigationButton navButton;
 
+	private DevToolsButton hideOverlay;
+	private boolean shouldPause = false;
+
 	@Provides
 	DevToolsConfig provideConfig(ConfigManager configManager)
 	{
 		return configManager.getConfig(DevToolsConfig.class);
 	}
+
+	@Inject
+	private OverlayRenderer overlayRenderer;
+
+	@Inject
+	private KeyManager keyManager;
+
+	@Inject
+	private HideOverlayKeyboardListener hideOverlayKeyboardListener;
 
 	@Override
 	protected void startUp() throws Exception
@@ -183,6 +197,8 @@ public class DevToolsPlugin extends Plugin
 		soundEffects = new DevToolsButton("Sound Effects");
 		scriptInspector = new DevToolsButton("Script Inspector");
 
+		hideOverlay = new DevToolsButton("Hide Overlays");
+
 		overlayManager.add(overlay);
 		overlayManager.add(locationOverlay);
 		overlayManager.add(sceneOverlay);
@@ -205,6 +221,20 @@ public class DevToolsPlugin extends Plugin
 		clientToolbar.addNavigation(navButton);
 
 		eventBus.register(soundEffectOverlay);
+
+		keyManager.registerKeyListener(hideOverlayKeyboardListener);
+		hideOverlay(false);
+	}
+
+	public void toggle()
+	{
+		shouldPause = !shouldPause;
+		hideOverlay(shouldPause);
+	}
+
+	protected void hideOverlay(boolean shouldPause)
+	{
+		overlayRenderer.setPauseRendering(shouldPause);
 	}
 
 	@Override
@@ -219,6 +249,9 @@ public class DevToolsPlugin extends Plugin
 		overlayManager.remove(mapRegionOverlay);
 		overlayManager.remove(soundEffectOverlay);
 		clientToolbar.removeNavigation(navButton);
+
+		keyManager.unregisterKeyListener(hideOverlayKeyboardListener);
+		hideOverlay(false);
 	}
 
 	@Subscribe

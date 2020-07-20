@@ -27,6 +27,10 @@ package net.runelite.client.plugins.devtools;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Keybind;
+
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 
 @ConfigGroup("devtools")
 public interface DevToolsConfig extends Config
@@ -48,4 +52,14 @@ public interface DevToolsConfig extends Config
 		description = ""
 	)
 	void inspectorAlwaysOnTop(boolean value);
+
+	@ConfigItem(
+		keyName = "hideOverlayToggle",
+		name = "Hide Overlay Hotkey",
+		description = "Hotkey to hide RuneLite overlays"
+	)
+	default Keybind hideOverlayToggle()
+	{
+		return new Keybind(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK);
+	}
 }
