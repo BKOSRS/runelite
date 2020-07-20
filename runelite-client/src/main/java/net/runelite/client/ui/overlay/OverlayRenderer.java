@@ -62,6 +62,8 @@ import net.runelite.client.ui.ClientUI;
 import net.runelite.client.ui.JagexColors;
 import net.runelite.client.util.ColorUtil;
 
+import lombok.Setter;
+
 @Singleton
 @Slf4j
 public class OverlayRenderer extends MouseAdapter implements KeyListener
@@ -119,6 +121,9 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener
 		mouseManager.registerMouseListener(this);
 	}
 
+	@Setter
+	private boolean pauseRendering;
+
 	@Subscribe
 	public void onFocusChanged(FocusChanged event)
 	{
@@ -170,6 +175,11 @@ public class OverlayRenderer extends MouseAdapter implements KeyListener
 
 	public void render(Graphics2D graphics, final OverlayLayer layer)
 	{
+		if (pauseRendering)
+		{
+			return;
+		}
+
 		if (layer != OverlayLayer.ABOVE_MAP
 			&& client.getWidget(WidgetInfo.FULLSCREEN_MAP_ROOT) != null
 			&& !client.getWidget(WidgetInfo.FULLSCREEN_MAP_ROOT).isHidden())
