@@ -28,6 +28,7 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.Keybind;
+import net.runelite.client.config.Range;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -61,5 +62,15 @@ public interface DevToolsConfig extends Config
 	default Keybind hideOverlayToggle()
 	{
 		return new Keybind(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK);
+	}
+
+	@ConfigItem(
+		keyName = "soundEffectsLines",
+		name = "Sound Effects Lines",
+		description = "Number of lines displayed in the sound effect overlay"
+	)
+	default int soundEffectsLines()
+	{
+		return 16;
 	}
 }

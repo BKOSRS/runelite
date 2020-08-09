@@ -28,19 +28,22 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
+import com.google.common.primitives.Ints;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.AreaSoundEffectPlayed;
 import net.runelite.api.events.SoundEffectPlayed;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
 
 class SoundEffectOverlay extends OverlayPanel
 {
-	private final static int MAX_LINES = 16;
+	private final DevToolsConfig config;
+	private int MAX_LINES;
 	private final static Color COLOR_SOUND_EFFECT = Color.WHITE;
 	private final static Color COLOR_AREA_SOUND_EFFECT = Color.YELLOW;
 	private final static Color COLOR_SILENT_SOUND_EFFECT = Color.GRAY;
@@ -48,11 +51,22 @@ class SoundEffectOverlay extends OverlayPanel
 	private final Client client;
 	private final DevToolsPlugin plugin;
 
+	@Subscribe
+	public void onConfigChanged(ConfigChanged event)
+	{
+		if (event.getGroup().equals("devtools"))
+		{
+			MAX_LINES = Ints.constrainToRange(config.soundEffectsLines(), 2, 25);
+		}
+	}
+
 	@Inject
-	SoundEffectOverlay(Client client, DevToolsPlugin plugin)
+	SoundEffectOverlay(Client client, DevToolsPlugin plugin, DevToolsConfig config)
 	{
 		this.client = client;
 		this.plugin = plugin;
+		this.config = config;
+		MAX_LINES = Ints.constrainToRange(config.soundEffectsLines(), 2, 25);
 		panelComponent.getChildren().add(LineComponent.builder()
 			.left("Sound Effects")
 			.leftColor(Color.CYAN)
