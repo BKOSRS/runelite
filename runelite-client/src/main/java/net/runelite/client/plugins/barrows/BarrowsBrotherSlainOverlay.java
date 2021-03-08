@@ -47,14 +47,16 @@ public class BarrowsBrotherSlainOverlay extends OverlayPanel
 	private static final DecimalFormat REWARD_POTENTIAL_FORMATTER = new DecimalFormat("##0.00%");
 
 	private final Client client;
+	private final BarrowsConfig config;
 
 	@Inject
-	private BarrowsBrotherSlainOverlay(BarrowsPlugin plugin, Client client)
+	private BarrowsBrotherSlainOverlay(BarrowsPlugin plugin, Client client, BarrowsConfig config)
 	{
 		super(plugin);
 		setPosition(OverlayPosition.TOP_LEFT);
 		setPriority(OverlayPriority.LOW);
 		this.client = client;
+		this.config = config;
 		getMenuEntries().add(new OverlayMenuEntry(RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Barrows overlay"));
 	}
 
@@ -63,7 +65,7 @@ public class BarrowsBrotherSlainOverlay extends OverlayPanel
 	{
 		// Do not display overlay if potential is null/hidden
 		final Widget potential = client.getWidget(WidgetInfo.BARROWS_POTENTIAL);
-		if (potential == null || potential.isHidden())
+		if (potential == null || potential.isHidden() || !config.showSlainOverlay())
 		{
 			return null;
 		}

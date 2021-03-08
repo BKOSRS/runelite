@@ -97,4 +97,15 @@ public interface BarrowsConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+		keyName = "showSlainOverlay",
+		name = "Show Brothers slain overlay",
+		description = "Configure whether or not to display the Barrows Brothers slain overlay",
+		position = 7
+	)
+	default boolean showSlainOverlay()
+	{
+		return true;
+	}
 }
