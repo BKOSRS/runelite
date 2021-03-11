@@ -52,6 +52,17 @@ public interface RandomEventConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "leftClickDismiss",
+		name = "Left click dismiss",
+		description = "Left click dismiss random events for which you do not want to be notified",
+		position = -2
+	)
+	default boolean leftClickDismiss()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 			keyName = "notifyAll",
 			name = "Notify for all events",
 			description = "",

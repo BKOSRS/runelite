@@ -34,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.MenuAction;
+import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.Player;
@@ -45,6 +46,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.util.Text;
 
 @PluginDescriptor(
 	name = "Random Events",
@@ -164,6 +166,35 @@ public class RandomEventPlugin extends Plugin
 			if (npc != null && EVENT_NPCS.contains(npc.getId()) && npc != currentRandomEvent && config.removeMenuOptions())
 			{
 				client.setMenuEntries(Arrays.copyOf(client.getMenuEntries(), client.getMenuEntries().length - 1));
+			}
+			// Only swap Dismiss on random event NPCs for which you do NOT want to be notified
+			if (npc != null && EVENT_NPCS.contains(npc.getId()) && npc == currentRandomEvent && config.leftClickDismiss() && !shouldNotify(npc.getId()))
+			{
+				MenuEntry[] menuEntries = client.getMenuEntries();
+				int dismissIndex = -1;
+				int topIndex = menuEntries.length - 1;
+
+				for (int i = 0; i < topIndex; i++)
+				{
+					if (Text.removeTags(menuEntries[i].getOption()).equals("Dismiss"))
+					{
+						dismissIndex = i;
+						break;
+					}
+				}
+
+				if (dismissIndex == -1)
+				{
+					return;
+				}
+
+				MenuEntry entry1 = menuEntries[dismissIndex];
+				MenuEntry entry2 = menuEntries[topIndex];
+
+				menuEntries[dismissIndex] = entry2;
+				menuEntries[topIndex] = entry1;
+
+				client.setMenuEntries(menuEntries);
 			}
 		}
 	}
